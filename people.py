@@ -109,7 +109,7 @@ class Student(Person):
         super().__init__(name, email, phone)
 
         self.verify_group(group)
-        self.group = group
+        self.group = self.normalize_group(group)
 
     @staticmethod
     def verify_group(group):
@@ -119,7 +119,7 @@ class Student(Person):
 
     @staticmethod
     def normalize_group(group):
-        return group.replace(" ", "").lower()
+        return group.strip().replace(" ", "").lower()
 
     def role(self):
         return "студент"
