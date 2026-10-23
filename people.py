@@ -1,4 +1,5 @@
-from exceptions import QuestionnaireError
+class QuestionnaireError(Exception):
+    pass
 
 class Person:
     def __init__(self, name, email, phone):
@@ -148,3 +149,65 @@ class Teacher(Person):
 
     def extra(self):
         return self.department
+
+if __name__ == "__main__":
+    print("=" * 45 + "ПРОВЕРКА КЛАССА Student" + "=" * 45)
+    test_data = [("Петрова", "petrova@mail.ru", "+79205673421", "09с33"),
+                 ("Игнатьев Иван", "ignatiev", "89526334980", "09с33"),
+                 ("Петрова Мария Аркадьевна", "petrova@", "89332715541", "09с33"),
+                 ("Голубева Александра Львовна", "golubeva@gmailcom", "7 (956) 850-65-70", "09с33"),
+                 ("Корчагина Вера Дмитриевна", "@yandex.ru", "8982 407-91-05", "09с33"),
+                 ("Марков Иван", "markov@mail.ru", "+792056734", "09с33"),
+                 ("Борисов Артём Павлович", "borisov@mail.ru", "556-75-07", "09с33"),
+                 ("Куликова Вероника Дмитриевна", "kulikova@mail.ru", "7 (952) 077-25-40", ""),
+                 ("Полякова Марьям Георгиевна", "polyakova@gmail.com", "7971537-87-22", " "),
+                 ("МАРКОВ иван МАКарОВИЧ", "MARKOV@mail.ru", "7 (970) 450-02-03", "09с41"),
+                 ("Морозова София", "morozova@yandex.ru", "7910453-00-18", "09с33")]
+
+    students = []
+
+    for d in test_data:
+        try:
+            students.append(Student(d[0], d[1], d[2], d[3]))
+
+        except QuestionnaireError as e:
+            print(f"Не принято {d[0]}: {e}")
+
+    print()
+    for p in students:
+        print(f"{p.role()} {p} ({p.short_fio()}) {p.masked_phone()} {p.extra()}")
+
+    sort_persons = sorted(students)
+    print("\nПо ФИО:")
+    for p in sort_persons: print(p)
+    print("\n")
+
+    print("=" * 45 + "ПРОВЕРКА КЛАССА Teacher" + "=" * 45)
+    test_data = [("Петрова", "petrova@mail.ru", "+79205673421", "Кафедра И9"),
+                 ("Игнатьев Иван", "ignatiev", "89526334980", "Кафедра И9"),
+                 ("Петрова Мария Аркадьевна", "petrova@", "89332715541", "Кафедра И9"),
+                 ("Голубева Александра Львовна", "golubeva@gmailcom", "7 (956) 850-65-70", "Кафедра И9"),
+                 ("Корчагина Вера Дмитриевна", "@yandex.ru", "8982 407-91-05", "Кафедра И9"),
+                 ("Марков Иван", "markov@mail.ru", "+792056734", "Кафедра И9"),
+                 ("Борисов Артём Павлович", "borisov@mail.ru", "556-75-07", "Кафедра И9"),
+                 ("Куликова Вероника Дмитриевна", "kulikova@mail.ru", "7 (952) 077-25-40", ""),
+                 ("Полякова Марьям Георгиевна", "polyakova@gmail.com", "7971537-87-22", " "),
+                 ("МАРКОВ иван МАКарОВИЧ", "MARKOV@mail.ru", "7 (970) 450-02-03", "Кафедра А4"),
+                 ("Морозова София", "morozova@yandex.ru", "7910453-00-18", "Кафедра О7")]
+
+    teachers = []
+
+    for d in test_data:
+        try:
+            teachers.append(Teacher(d[0], d[1], d[2], d[3]))
+
+        except QuestionnaireError as e:
+            print(f"Не принято {d[0]}: {e}")
+
+    print()
+    for p in teachers:
+        print(f"{p.role()} {p} ({p.short_fio()}) {p.masked_phone()} {p.extra()}")
+
+    sort_persons = sorted(teachers)
+    print("\nПо ФИО:")
+    for p in sort_persons: print(p)

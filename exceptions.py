@@ -1,6 +1,0 @@
-class QuestionnaireError(Exception):
-    pass
-
-
-
-
