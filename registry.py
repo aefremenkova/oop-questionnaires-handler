@@ -1,4 +1,5 @@
 from people import Student, Teacher, QuestionnaireError
+import os
 
 class Registry:
     def __init__(self):
@@ -38,6 +39,9 @@ class Registry:
 
 
     def load_file(self, filename = "anketa.txt"):
+        if not os.path.exists(filename):
+            filename = "anketa.txt"
+
         records = []
         try:
             with open(filename, "r", encoding="utf-8") as f:
@@ -54,6 +58,8 @@ class Registry:
                     continue
 
                 self.process_record(record, i)
+
+            return True
 
         except FileNotFoundError:
             return False
