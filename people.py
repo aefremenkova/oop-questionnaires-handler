@@ -125,3 +125,26 @@ class Student(Person):
 
     def extra(self):
         return self.group
+
+class Teacher(Person):
+    def __init__(self, name, email, phone, department=''):
+        super().__init__(name, email, phone)
+
+        self.verify_department(department)
+        self.department = department
+
+    @staticmethod
+    def verify_department(department):
+        department = department.strip()
+        if len(department) == 0:
+            raise QuestionnaireError("Пустое наименование кафедры")
+
+    @staticmethod
+    def normalize_group(department):
+        return department.lower()
+
+    def role(self):
+        return "преподаватель"
+
+    def extra(self):
+        return self.department
