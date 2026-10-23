@@ -39,9 +39,6 @@ class Registry:
 
 
     def load_file(self, filename = "anketa.txt"):
-        if not os.path.exists(filename):
-            filename = "anketa.txt"
-
         records = []
         try:
             with open(filename, "r", encoding="utf-8") as f:
@@ -97,11 +94,16 @@ class Registry:
 
         return statistics
 
-    def save_results(self):
+    def sort_result_by_name(self):
+        self.accepted_quests.sort(key=lambda p: p.name.replace("ё", "е").replace("Ё", "Е"))
+        return self.accepted_quests
+
+    def save_accepted(self):
         with open("ok.txt", "a", encoding="utf-8") as f:
             for person in self.accepted_quests:
                 f.writelines(f"{person.name};{person.email};{person.phone};{person.role()};{person.extra()}\n")
 
+    def save_rejected(self):
         with open("errors.txt", "a", encoding="utf-8") as f:
             for quest in self.rejected_quests:
                 f.writelines(f"{quest[1]}{";" if quest[1][-1] != ";" else ""}{quest[2]}\n")

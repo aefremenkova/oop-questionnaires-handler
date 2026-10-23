@@ -1,16 +1,32 @@
+from locale import normalize
+
+
 class QuestionnaireError(Exception):
     pass
 
 class Person:
+    col_width_correction = 3
+    name_col_width = len("ФИО") + col_width_correction
+    email_col_width = len("Email") + col_width_correction
+    phone_col_width = len("Телефон") + col_width_correction
+    role_col_width = len("Роль") + col_width_correction
+    extra_col_width = len("Группа/кафедра") + col_width_correction
+
     def __init__(self, name, email, phone):
         self.verify_name(name)
         self.name = self.normalize_name(name)
+        if len(self.name) > Person.name_col_width:
+            Person.name_col_width = len(self.name) + Person.col_width_correction
 
         self.verify_email(email)
         self.email = self.normalize_email(email)
+        if len(self.email) > Person.email_col_width:
+            Person.email_col_width = len(self.email) + Person.col_width_correction
 
         self.verify_phone_number(phone)
         self.phone = self.normalize_phone_number(phone)
+        if len(self.phone) > Person.phone_col_width:
+            Person.phone_col_width = len(self.phone) + Person.col_width_correction
 
     @staticmethod
     def verify_name(name):
@@ -20,13 +36,24 @@ class Person:
 
     @staticmethod
     def normalize_name(name):
-        norm_parts = [n.capitalize() for n in name.split()]
+        norm_parts = []
+        for name_part in name.split():
+            if "-" in name_part:
+                double_parts = name_part.split("-")
+                norm_double_parts = "-".join([p.capitalize() for p in double_parts])
+                norm_parts.append(norm_double_parts)
+            else:
+                norm_parts.append(name_part.capitalize())
 
         return " ".join(norm_parts)
 
     @staticmethod
     def verify_email(email):
         errors = []
+
+        email = email.strip()
+        if " " in email:
+            raise QuestionnaireError("Эл.адрес не должен содержать пробелы")
 
         at_count = email.count("@")
         if at_count != 1:
@@ -54,7 +81,7 @@ class Person:
 
     @staticmethod
     def normalize_email(email):
-        return email.lower()
+        return email.strip().lower()
 
     @staticmethod
     def verify_phone_number(phone):
@@ -64,7 +91,7 @@ class Person:
             raise QuestionnaireError(f"Номер телефона должен содержать 11 цифр, получено {len(digits)}")
 
         if digits[0] != "7" and digits[0] != "8":
-            return QuestionnaireError("Номер телефона должен начинаться с 7 или 8, получено {digits[0]}")
+            return QuestionnaireError(f"Номер телефона должен начинаться с 7 или 8, получено {digits[0]}")
 
     
     @staticmethod
@@ -110,6 +137,11 @@ class Student(Person):
 
         self.verify_group(group)
         self.group = self.normalize_group(group)
+        if len(self.group) > Person.extra_col_width:
+            Person.extra_col_width = len(self.group) + Person.col_width_correction
+
+        if len(self.role()) > Person.role_col_width:
+            Person.role_col_width = len(self.role()) + Person.col_width_correction
 
     @staticmethod
     def verify_group(group):
@@ -132,7 +164,12 @@ class Teacher(Person):
         super().__init__(name, email, phone)
 
         self.verify_department(department)
-        self.department = department
+        self.department = self.normalize_department(department)
+        if len(self.department) > Person.extra_col_width:
+            Person.extra_col_width = len(self.department) + Person.col_width_correction
+
+        if len(self.role()) > Person.role_col_width:
+            Person.role_col_width = len(self.role()) + Person.col_width_correction
 
     @staticmethod
     def verify_department(department):
@@ -141,8 +178,8 @@ class Teacher(Person):
             raise QuestionnaireError("Пустое наименование кафедры")
 
     @staticmethod
-    def normalize_group(department):
-        return department.lower()
+    def normalize_department(department):
+        return department.strip()
 
     def role(self):
         return "преподаватель"
