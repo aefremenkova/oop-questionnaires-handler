@@ -34,7 +34,7 @@ class Person:
     
         parts = email.split("@")
         if any(p == '' for p in parts):
-            return QuestionnaireError("Пустое имя почтового ящика или домен в эл.адресе")
+            raise QuestionnaireError("Пустое имя почтового ящика или домен в эл.адресе")
 
         user = parts[0]
         domen = parts[1]
@@ -102,3 +102,26 @@ class Person:
 
     def __lt__(self, other):
         return str(self) < str(other)
+
+class Student(Person):
+    def __init__(self, name, email, phone, group=''):
+        super().__init__(name, email, phone)
+
+        self.verify_group(group)
+        self.group = group
+
+    @staticmethod
+    def verify_group(group):
+        group = group.strip()
+        if len(group) == 0:
+            raise QuestionnaireError("Пустой номер группы")
+
+    @staticmethod
+    def normalize_group(group):
+        return group.replace(" ", "").lower()
+
+    def role(self):
+        return "студент"
+
+    def extra(self):
+        return self.group
