@@ -1,46 +1,31 @@
 from registry import Registry
-
-HEADERS = ["№", "ФИО", "Роль", "Группа/кафедра", "Телефон"]
-
-def find_cols_width(quests):
-    cols_width = {}
-    correction = 3
-
-    for h in HEADERS:
-        match h:
-            case "№":
-                cols_width[h] = len(quests) + correction
-            case "ФИО":
-                cols_width[h] = max(len(val) for val in [p.name for p in quests]) + correction
-            case "Роль":
-                cols_width[h] = max(len(val) for val in [p.role() for p in quests]) + correction
-            case "Группа/кафедра":
-                cols_width[h] = max(len(val) for val in ([p.extra() for p in quests] + ["Группа/кафедра"])) + correction
-            case "Телефон":
-                cols_width[h] = max(len(val) for val in [p.masked_phone() for p in quests]) + correction
-
-    return cols_width
+from people import Person
 
 def main():
     registry = Registry()
 
-    quest_file = input("Введите название файла с анкетами: ")
-    res = registry.load_file(quest_file)
+    quest_file = input("Введите название файла с анкетами или нажмите " +
+                       "Enter, чтобы использовать файл по умолчанию (anketa.txt): ")
+    if not quest_file.strip():
+        res = registry.load_file()
+    else:
+        res = registry.load_file(quest_file)
     if not res:
-        print(f"Файл '{quest_file}' и файл по умолчанию 'anketa.txt' не найдены")
+        print(f"Файл '{quest_file}' не найден")
         return
 
     print(f"\nПринято: {len(registry)} | Отклонено строк: {registry.rejected_counter}\n")
 
-    cols_width = find_cols_width(registry.accepted_quests)
-    headers = f"{"№":<{cols_width["№"]}}{"ФИО":<{cols_width["ФИО"]}}{"Роль":<{cols_width["Роль"]}}" + \
-              f"{"Группа/кафедра":<{cols_width["Группа/кафедра"]}}{"Телефон":<{cols_width["Телефон"]}}"
+    headers = f"{"№":<{len(registry.accepted_quests) + Person.col_width_correction}}" + \
+              f"{"ФИО":<{Person.name_col_width}}{"Роль":<{Person.role_col_width}}" + \
+              f"{"Группа/кафедра":<{Person.extra_col_width}}{"Телефон":<{Person.phone_col_width}}"
     print("=" * len(headers))
     print(headers)
     print("=" * len(headers))
     for i, rec in enumerate(registry.accepted_quests, 1):
-        print(f"{i:<{cols_width["№"]}}{rec.name:<{cols_width["ФИО"]}}{rec.role():<{cols_width["Роль"]}}" + 
-              f"{rec.extra():<{cols_width["Группа/кафедра"]}}{rec.masked_phone():<{cols_width["Телефон"]}}")
+        print(f"{i:<{len(registry.accepted_quests) + Person.col_width_correction}}" +\
+              f"{rec.name:<{Person.name_col_width}}{rec.role():<{Person.role_col_width}}" + 
+              f"{rec.extra():<{Person.extra_col_width}}{rec.masked_phone():<{Person.phone_col_width}}")
 
     print(f"\nОтклонено {len(registry.rejected_quests)} анкет:")
     for r in registry.rejected_quests:
