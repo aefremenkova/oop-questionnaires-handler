@@ -39,9 +39,6 @@ class Registry:
 
 
     def load_file(self, filename = "anketa.txt"):
-        if not os.path.exists(filename):
-            filename = "anketa.txt"
-
         records = []
         try:
             with open(filename, "r", encoding="utf-8") as f:
