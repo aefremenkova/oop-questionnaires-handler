@@ -1,0 +1,8 @@
+__pycache__/
+.venv/
+.vs/
+*.log
+*.docs
+secret.txt
+ok.txt
+errors.txt
